@@ -86,18 +86,19 @@ async function initiateTabCapture() {
     await stopAudioCapture();
 
     try {
-        const stream = await new Promise((resolve, reject) => {
-            chrome.tabCapture.capture({ audio: true, video: false }, (stream) => {
-                if (chrome.runtime.lastError) {
-                    reject(new Error(chrome.runtime.lastError.message));
-                    return;
+        const { streamId, error } = await chrome.runtime.sendMessage({ action: "getStreamId" });
+        if (!streamId) {
+            throw new Error(error || "Failed to obtain stream ID");
+        }
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                mandatory: {
+                    chromeMediaSource: "tab",
+                    chromeMediaSourceId: streamId
                 }
-                if (!stream) {
-                    reject(new Error("No stream returned from tabCapture"));
-                    return;
-                }
-                resolve(stream);
-            });
+            },
+            video: false
         });
 
         console.log("Tab capture successful. Stream received.");
