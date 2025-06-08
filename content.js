@@ -154,6 +154,8 @@ async function processAudioStream(stream) {
         `], { type: 'application/javascript' })));
 
         const workletNode = new AudioWorkletNode(audioContext, 'audio-processor');
+        // Expose the node globally so it can be disconnected later
+        audioProcessor = workletNode;
         
         workletNode.port.onmessage = async (event) => {
             if (!isCapturing) return;
@@ -213,7 +215,13 @@ async function stopAudioCapture() {
     isCapturing = false;
 
     if (audioProcessor) {
-        audioProcessor.disconnect();
+        try {
+            audioProcessor.port.onmessage = null;
+            audioProcessor.disconnect();
+            console.log("Audio processor disconnected.");
+        } catch (e) {
+            console.error("Error disconnecting audio processor:", e);
+        }
         audioProcessor = null;
     }
     
