@@ -488,6 +488,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.action === "getStatus") {
     // Report current running status (used by popup)
     sendResponse({ isRunning: isRunning });
+  } else if (message.action === "getStreamId") {
+    // Provide a stream ID for tab audio capture
+    chrome.tabCapture.getMediaStreamId({ consumerTabId: sender.tab.id }, (streamId) => {
+      if (chrome.runtime.lastError || !streamId) {
+        console.error("Failed to get stream ID:", chrome.runtime.lastError?.message);
+        sendResponse({ streamId: null, error: chrome.runtime.lastError?.message || 'Unable to get stream ID' });
+      } else {
+        sendResponse({ streamId });
+      }
+    });
+    return true;
   } else if (message.action === "audioChunk") {
     if (isRunning && message.chunk) {
         sendAudioChunkToTranscribe(message.chunk);
