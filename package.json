@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "main": "background.js",
-  "scripts": { 
-    "build": "webpack --config webpack.config.js" 
+  "scripts": {
+    "build": "webpack --config webpack.config.js"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
@@ -22,5 +22,6 @@
     "@aws-sdk/signature-v4": "^3.370.0",
     "@aws-sdk/url-parser": "^3.370.0",
     "@aws-sdk/util-utf8-node": "^3.259.0"
-  }
+  },
+  "license": "MIT"
 }
